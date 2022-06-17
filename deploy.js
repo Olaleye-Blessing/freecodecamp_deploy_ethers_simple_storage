@@ -23,8 +23,8 @@ async function main() {
   //   gasPrice: 1_000_00, // deploy with gasPrice
   // });
   // The address is available immediately, but the contract is NOT deployed yet
-  // console.log("===============contract address================");
-  // console.log(contract.address);
+  console.log("===============contract address================");
+  console.log(contract.address);
   // console.log("===============contract");
   // console.log(contract);
   // console.log("===============contract================");
