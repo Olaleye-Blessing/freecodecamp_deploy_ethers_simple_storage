@@ -15,26 +15,24 @@ async function main() {
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8"); // interface, our code knows how to interact with the contract
   const bin = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.bin", "utf8"); // binary, main compiled code of the contract
 
-  // ContractFactory is used to deploy contract
-  const contractFactory = new ethers.ContractFactory(abi, bin, wallet);
+  // deploying with transaction data
+  const nonce = await wallet.getTransactionCount(); // automatically get correct nonce
+  const tx = {
+    // nonce: 6, // manually get nounce which could be stressful
+    nonce, // manually get nounce which could be stressful
+    gasPrice: 2_000_000_000,
+    gasLimit: 1_000_000,
+    to: null,
+    value: 0,
+    data: `0x${bin}`,
+    chainId: 31337,
+  };
 
-  const contract = await contractFactory.deploy();
-  // const contract = await contractFactory.deploy({
-  //   gasPrice: 1_000_00, // deploy with gasPrice
-  // });
-  // The address is available immediately, but the contract is NOT deployed yet
-  // console.log("===============contract address================");
-  // console.log(contract.address);
-  // console.log("===============contract");
-  // console.log(contract);
-  // console.log("===============contract================");
-
-  // console.log("deployment transaction");
-  // console.log(contract.deployTransaction); // this is available when you create a transaction. this is the transaction that the signer sent to deploy
-
-  const transactionReceipt = await contract.deployTransaction.wait(1); // wait for 1 block confirmation to make sure contract was deployed
-  // console.log("deployment receipt");
-  // console.log(transactionReceipt);
+  // const signedTx = await wallet.signTransaction(tx); // this signed the transaction without sending
+  // console.log(signedTx);
+  const sentTx = await wallet.sendTransaction(tx); // this automatically signed the transaction before sending
+  await sentTx.wait(1); //
+  console.log(sentTx);
 }
 
 main()
