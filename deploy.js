@@ -32,9 +32,21 @@ async function main() {
   // console.log("deployment transaction");
   // console.log(contract.deployTransaction); // this is available when you create a transaction. this is the transaction that the signer sent to deploy
 
-  const transactionReceipt = await contract.deployTransaction.wait(1); // wait for 1 block confirmation to make sure contract was deployed
+  await contract.deployTransaction.wait(1); // wait for 1 block confirmation to make sure contract was deployed
   // console.log("deployment receipt");
   // console.log(transactionReceipt);
+
+  // we have access to the contract abi at this point because the contract has been deployed
+  const favouriteNumberHex = await contract.retrieve();
+  const favouriteNumber = favouriteNumberHex.toString();
+  console.log({ favouriteNumberHex, favouriteNumber });
+
+  // This is going to cost gas cause we are interacting with state on blockchain
+  const transactionResponse = await contract.store("7"); // always pass argument as strings. Javascript doesn't understand big number.
+  const transactionReceipt = await transactionResponse.wait(1); //
+
+  const updatedFavNumHex = await contract.retrieve();
+  console.log({ updatedFavNumHex, updatedFavNum: updatedFavNumHex.toString() });
 }
 
 main()
